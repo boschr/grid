@@ -1,0 +1,70 @@
+$column-prefix: 'col--' !default;
+
+$breakpoints: (
+  tiny: 400px,
+  small: 600px,
+  medium: 800px,
+  large: 1000px,
+) !default;
+
+@mixin cols($cols, $break) {
+  @for $i from 1 through $cols {
+    & > .#{$column-prefix}#{nth($break, 1)}- {
+      &#{$i} {
+        width: percentage(1 / $cols * $i);
+      }
+
+      &pull-#{$i} {
+        right: percentage(1 / $cols * $i);
+      }
+
+      &push-#{$i} {
+        left: percentage(1 / $cols * $i);
+      }
+    }
+  }
+}
+
+@mixin row($cols, $gutter) {
+  $gutter-half: $gutter / 2;
+
+  @if $gutter-half > 0 {
+    margin-right: #{$gutter-half * -1}px;
+    margin-left: #{$gutter-half * -1}px;
+  }
+
+  &::after {
+    display: block;
+    height: 0;
+    clear: both;
+    content: '';
+    visibility: hidden;
+  }
+
+  & > [class^="#{$column-prefix}"] {
+    display: inline-block;
+    position: relative;
+    float: left;
+
+    @if $gutter-half > 0 {
+      padding-right: #{$gutter-half}px;
+      padding-left: #{$gutter-half}px;
+    }
+  }
+
+  @each $break in $breakpoints {
+    @if index($breakpoints, $break) == 1 {
+      @include cols($cols, $break);
+    } @else {
+      @media screen and (min-width: nth($break, 2)) {
+        @include cols($cols, $break);
+      }
+    }
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
